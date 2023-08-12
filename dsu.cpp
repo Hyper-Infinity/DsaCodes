@@ -23,13 +23,14 @@ typedef set<int> si;
 typedef multiset<int> msi;
 typedef unordered_set<int> usi;
 
-class DSU
+// union by rank
+class DSUR
 {
 private:
     vector<int> rank;
     vector<int> parent;
 public:
-    DSU(int n)
+    DSUR(int n)
     {
         rank.resize(n + 1);
         parent.resize(n + 1);
@@ -64,6 +65,59 @@ public:
         else{
             parent[pv] = pu;
             rank[pu]++;
+        }
+    }
+
+    bool inSameCompo(int u, int v)
+    {
+        return findParent(u) == findParent(v);
+    }
+};
+
+// union by size 
+class DSUS
+{
+private:
+    vector<int> size;
+    vector<int> parent;
+public:
+    DSUS(int n)
+    {
+        size.resize(n + 1);
+        parent.resize(n + 1);
+        for(int i = 0; i <= n; i++)
+        {
+            size[i] = 1;
+            parent[i] = i;
+        }
+    }
+
+    int findParent(int node)
+    {
+        // Base case
+        if(parent[node] == node)
+            return node;
+        
+        return parent[node] = findParent(parent[node]);
+    }
+
+    void unionByRank(int u, int v)
+    {
+        int pu = findParent(u);
+        int pv = findParent(v);
+        if(pu == pv) return;
+
+        if(size[pu] > size[pv]){
+            parent[pv] = pu;
+            size[pu] += size[pv];
+        }
+        else if (size[pv] > size[pu]){
+            parent[pu] = pv;
+            size[pv] += size[pu];
+        }
+        else{
+            parent[pv] = pu;
+            size[pu] += size[pv];
         }
     }
 
